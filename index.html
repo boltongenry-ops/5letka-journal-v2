@@ -156,7 +156,11 @@ img,svg{display:block}
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--c-border);
 }
+/* Специфичность: .btn{display:inline-flex} идёт позже и перебивал .desktop-only,
+   поэтому для кнопки-пилюли нужен селектор с большим весом */
 .desktop-only{display:none}
+.btn.desktop-only{display:none}
+.mobile-only{display:inline-flex}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .logo-wrap{
   width:38px;height:38px;border-radius:var(--r-sm);flex-shrink:0;position:relative;overflow:hidden;
@@ -216,15 +220,16 @@ img,svg{display:block}
 /* ===== Filters ===== */
 .filters{display:none;margin-bottom:12px}
 .filters.active{display:block}
-.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+/* Фильтр дат — iOS segmented control: сплошной трек, сегменты без бордюра */
+.chips{display:flex;gap:2px;overflow-x:auto;padding:2px;margin-bottom:10px;background:var(--c-surface-a);border-radius:12px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{
-  flex:0 0 auto;min-height:38px;padding:8px 14px;border-radius:999px;
-  border:1.5px solid var(--c-border);background:var(--c-surface);
+  flex:1 1 0;min-width:0;min-height:38px;padding:8px 10px;border-radius:10px;
+  border:none;background:transparent;
   font-size:13px;font-weight:600;color:var(--c-text-2);letter-spacing:-.1px;
   transition:all var(--t-fast);
 }
-.chip.active{background:var(--c-primary);border-color:var(--c-primary);color:#fff;box-shadow:0 3px 10px rgba(47,91,215,.25)}
+.chip.active{background:var(--c-primary);color:#fff;box-shadow:0 2px 8px rgba(47,91,215,.28)}
 .range-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .range-row label{font-size:12px;color:var(--c-text-3);font-weight:600;display:flex;align-items:center;gap:6px}
 .search-row{display:flex;align-items:center;gap:10px}
@@ -244,12 +249,16 @@ img,svg{display:block}
 .input-search{flex:1;min-width:0}
 
 /* ===== Cards (журнал, мобильный вид) ===== */
-/* Списочные карточки: граница без тени — тень только у модалок, FAB и тостов */
+/* iOS grouped: сплошная поверхность без бордюра, радиус 16.
+   Прозрачная граница сохранена, чтобы геометрия строк не «прыгала»
+   и у state-вариантов (today/expired) была своя видимая грань. */
 .booking-cards{display:flex;flex-direction:column;gap:10px}
 .booking-card{
-  background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--r);
+  background:var(--c-surface);border:1px solid transparent;border-radius:16px;
   padding:14px;
 }
+/* today/expired оставлены с видимой гранью: у expired фон surface-a почти совпадает
+   с фоном страницы, без грани карточка терялась бы */
 .booking-card.today{border-color:var(--c-today-b);background:var(--c-today)}
 /* Прошедшее приглушаем цветом, а не opacity: иначе мелкий текст падает ниже 4.5:1 */
 .booking-card.expired{background:var(--c-surface-a);border-color:var(--c-border-l)}
@@ -400,19 +409,14 @@ tbody tr:hover td:last-child{background:var(--c-surface-a)}
   border-top:1px solid var(--c-border);
 }
 .tab-btn{
-  position:relative;z-index:0;flex:1;min-height:var(--nav-h);border:none;background:transparent;
+  position:relative;flex:1;min-height:var(--nav-h);border:none;background:transparent;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
   font-size:10.5px;font-weight:600;letter-spacing:.01em;color:var(--c-text-3);
   transition:color var(--t-fast);
 }
-/* Пилюля под активной вкладкой: z-index:-1 держит её под иконкой и подписью */
-.tab-btn::before{
-  content:'';position:absolute;z-index:-1;inset:9px 15px;border-radius:14px;
-  background:transparent;transition:background var(--t-fast);
-}
-.tab-btn svg{width:22px;height:22px;stroke-width:2}
+/* iOS tab bar: активная вкладка — только цветом (иконка + подпись), без подложки */
+.tab-btn svg{width:24px;height:24px;stroke-width:2}
 .tab-btn.active{color:var(--c-primary)}
-.tab-btn.active::before{background:var(--c-primary-l)}
 .tab-btn.active svg{stroke-width:2.3}
 .tab-btn .tab-dot{position:absolute;transform:translate(14px,-12px);width:7px;height:7px;border-radius:50%;background:var(--c-success);display:none}
 .tab-btn.has-live .tab-dot{display:block}
@@ -425,11 +429,17 @@ tbody tr:hover td:last-child{background:var(--c-surface-a)}
 }
 .modal-overlay.active{display:flex}
 .modal{
+  position:relative;
   width:100%;max-width:560px;max-height:94vh;max-height:94dvh;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
   background:var(--c-surface);border-radius:var(--r-xl) var(--r-xl) 0 0;
   box-shadow:var(--s-lg);animation:sheetUp var(--t-spring);
 }
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+/* Ручка-грабер шторки: только CSS, контенту не мешает */
+.modal::before{
+  content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  width:36px;height:5px;border-radius:3px;background:var(--c-border);pointer-events:none;
+}
 .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 18px 8px;flex-shrink:0}
 .modal-head h2{font-size:18px;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
 .modal-close{width:40px;height:40px;border-radius:50%;border:none;background:var(--c-surface-a);color:var(--c-text-3);display:flex;align-items:center;justify-content:center}
@@ -571,13 +581,39 @@ select.form-input{
   .toast-container{left:auto;right:20px;bottom:90px;max-width:360px}
   .modal-overlay{align-items:center;padding:20px}
   .modal{border-radius:var(--r-xl);max-height:90vh;max-height:90dvh;animation:modalIn var(--t)}
+  .modal::before{display:none}
   @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
   .modal-foot{padding-bottom:18px}
   .form-row .form-group{flex:1}
   .range-row{margin-bottom:10px}
 }
 @media(min-width:900px){
-  .desktop-only{display:inline-flex}
+  .desktop-only,.btn.desktop-only{display:inline-flex}
+  .mobile-only{display:none}
+}
+
+/* ≤520px: бейдж «ЖУРНАЛ V2» — декор. Прячем раньше 400px-блока: без него
+   бренду нужно ~68px, с ним ~135px, а на 414–461px свободно всего 94–141px —
+   заголовок наехал бы на иконки (iPhone Plus/XS Max и подобные). */
+@media(max-width:520px){
+  .brand-text .v2{display:none}
+}
+
+/* ===== Узкие телефоны (≤400px, в т.ч. 360px) =====
+   Пять иконок + бренд в одну строку: считаем ширины.
+   360 = 12+12 (padding) + 34 (лого) + 8 (зазор) + 10 (зазор шапки)
+         + 5×38 + 4×3 (иконки) + ~82 на текст «Пятилетка» (~68px при 15px). */
+@media(max-width:400px){
+  .topbar{padding-left:12px;padding-right:12px}
+  .brand{gap:8px}
+  .logo-wrap{width:34px;height:34px}
+  .brand-text h1{font-size:15px;overflow:hidden;white-space:nowrap}
+  .brand-text .v2{display:none}
+  .brand-text .sub{display:none}
+  .topbar-actions{gap:3px}
+  .icon-btn{width:38px;height:38px}
+  .chips{margin-bottom:8px}
+  .chip{font-size:12.5px;padding:8px 6px}
 }
 </style>
 </head>
@@ -689,6 +725,9 @@ if(!sessionStorage.getItem('booking_auth_session')&&!localStorage.getItem('booki
   <div class="topbar-actions">
     <button class="btn btn-primary desktop-only" onclick="openModal()">
       <svg class="icon icon-sm"><use href="#ic-plus"/></svg> Новая заявка
+    </button>
+    <button class="icon-btn primary mobile-only" onclick="openModal()" title="Новая заявка" aria-label="Новая заявка">
+      <svg class="icon"><use href="#ic-plus"/></svg>
     </button>
     <button class="icon-btn" onclick="exportCSV()" title="Экспорт в CSV" aria-label="Экспорт в CSV">
       <svg class="icon"><use href="#ic-download"/></svg>
