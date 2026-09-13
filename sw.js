@@ -1,5 +1,5 @@
-var CACHE = 'p5letka-journal-v2-v4';
-var ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
+var CACHE = 'p5letka-journal-v2-v5';
+var ASSETS = ['./', './index.html', './manifest.json', './icon.svg', './apple-touch-icon.png'];
 
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(ASSETS)}));
