@@ -301,6 +301,12 @@ tbody tr:last-child td{border-bottom:none}
 td.gazebo-cell{font-weight:600}
 td.phone-cell{font-family:var(--font-mono);font-size:12.5px}
 .actions-inline{display:flex;gap:6px}
+/* Липкая колонка действий: кнопки видны при горизонтальной прокрутке таблицы */
+thead th:last-child,tbody td:last-child{position:sticky;right:0;z-index:2}
+thead th:last-child{background:var(--c-primary-ll);border-left:1px solid var(--c-border)}
+tbody td:last-child{background:var(--c-surface);border-left:1px solid var(--c-border-l)}
+tbody tr.row-today td:last-child{background:var(--c-today)}
+tbody tr:hover td:last-child{background:var(--c-surface-a)}
 .btn-xs{min-height:34px;padding:6px 10px;font-size:12px;border-radius:8px}
 .btn-xs svg{width:15px;height:15px}
 
