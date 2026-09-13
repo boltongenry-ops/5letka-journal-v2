@@ -1,4 +1,4 @@
-var CACHE = 'p5letka-journal-v2-v1';
+var CACHE = 'p5letka-journal-v2-v2';
 var ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', function(e){
